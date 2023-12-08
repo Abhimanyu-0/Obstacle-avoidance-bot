@@ -52,16 +52,17 @@ void loop() {
   int Rstatus = digitalRead(IRSensorRight); 
   int Lstatus = digitalRead(IRSensorLeft);
 
-
-  delay(100);
+  // If distance of the object/obstacle is more than 16 cm, then the bot will move ahead
   if (cm>=16)
   {
   moveForward(); 
   }
+  // If the distance of the object/obstacle is less than 10 cm, the bot will stop and detach the servos
   else if (cm<10)
   {
   stop();
   }
+  // If the distance of the obstacle/object is less than 15 cm, then the bot will adjust its path by going to the right first (arbitrary choice)
   else if (cm<=15)
   {
   moveRight();
@@ -69,12 +70,13 @@ void loop() {
   moveLeft();
   }
 
+  // If the right IR sensor detects white lane, the robot will go backwards 
   if (Rstatus==LOW)
   {
    stop();
    moveBackwardRight();
   }
-
+ //If the left IR sensor detects white line, the robot will go backward and left 
   if (Lstatus==LOW){
     stop();
     moveBackwardLeft();
