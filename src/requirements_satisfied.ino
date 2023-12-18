@@ -4,12 +4,12 @@
 Servo rservo;
 Servo lservo;
 
-//setting pins 
+// Setting pins 
 int pingPin = 7;
 int IRSensorRight = 3; 
 int IRSensorLeft = 4;
 
-
+// Function prototypes
 void moveForward();
 void moveBackward();
 void moveLeft();
@@ -18,6 +18,10 @@ void stop();
 void moveaBIT();
 void moveBackwardRight();
 void moveBackwardLeft();
+void executeCommand(char command);
+long centi(long microseconds);
+
+
 void setup() {
   // initialize serial communication:
   Serial.begin(9600);
@@ -29,21 +33,19 @@ void setup() {
 }
 
 void loop() {
-  // establish variables for duration of the ping, and the distance result
-  // in inches and centimeters:
+   // Serial communication control
   if (Serial.available() > 0) {
   char command = Serial.read();
   executeCommand(command);
   }
-
-
-
-
+  
+  // Ultrasonic sensor measurements
   long duration, inches, cm;
   float i =0;
 
   // The PING))) is triggered by a HIGH pulse of 2 or more microseconds.
   // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
+  // Triggering the PING))) sensor
   pinMode(pingPin, OUTPUT);
   digitalWrite(pingPin, LOW);
   delayMicroseconds(2);
@@ -62,53 +64,51 @@ void loop() {
 
   //Serial.print(inches);
   //Serial.print("in, ");
-  Serial.print(cm);
-  Serial.print("cm");
-  Serial.println();
+  //Serial.print(cm);
+  //Serial.print("cm");
+  //Serial.println();
 
   int Rstatus = digitalRead(IRSensorRight); 
   int Lstatus = digitalRead(IRSensorLeft);
 
-  // If distance of the object/obstacle is more than 16 cm, then the bot will move ahead
-  if (cm>=16)
-  {
-  rservo.attach(9);
-  lservo.attach(11);
-  float i=0;
-  for (i=0;i<=3;i++)
-  {rservo.write(0);
-  lservo.write(180-i);
-  }}
-  // If the distance of the object/obstacle is less than 10 cm, the bot will stop and detach the servos
-  else if (cm<10)
-  {
-  stop();
+  // Printing sensor readings only when necessary
+  if ( cm < 10 || cm <= 15 || Rstatus == 1 || Lstatus == 1) {
+    Serial.print("Distance: ");
+    Serial.print(cm);
+    Serial.println("cm");
   }
-  // If the distance of the obstacle/object is less than 15 cm, then the bot will adjust its path by going to the right first (arbitrary choice)
-  else if (cm<=15)
-  {
-  moveRight();
-  moveaBIT();
-  moveLeft();
+  
+  // Robot movement control based on sensor readings
+
+ if (cm >= 16) {
+    moveForward();
+  } else if (cm < 10) {
+    stop();
+  } else if (cm <= 15) {
+    moveRight();
+    moveaBIT();
+    moveLeft();
   }
 
   // If the right IR sensor detects white lane, the robot will go backwards 
-  if (Rstatus==1)
+  if (Rstatus==0)
   {
    stop();
    moveBackwardRight();
   }
  //If the left IR sensor detects white line, the robot will go backward and left 
-  if (Lstatus==1){
+  if (Lstatus==0){
     stop();
     moveBackwardLeft();
   }
 
 
-  //Serial communication control 
+ 
   
 }
-// Func definitions from here 
+
+
+// Function to execute serial commands
 void executeCommand(char command) {
   switch (command) {
     case 'F':
@@ -145,7 +145,7 @@ void moveForward(){
   lservo.write(180-i);}
 }
 
-//Employed to move teh bot to the right 
+//Employed to move the bot to the right 
 void moveRight(){
   rservo.detach();
   lservo.attach(11);
