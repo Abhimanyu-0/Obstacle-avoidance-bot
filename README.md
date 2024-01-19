@@ -1,4 +1,2 @@
 # Mechatronics_project
-source code and report for the Mechatronics project Fall 2023
-For source code ->
-src->obstacle_avoidance_code_final_project.ino
+The project we made is a self-navigating robot integrated with Ultrasonic and Infrared sensors and actuated by a pair of motors. When required, the robot can also navigate manually using commands from the keyboard. In addition, this robot is expected to be turned into a robotic pet called ZAN. With an incorporated LLM into the system, the robot can engage in dialogues and respond contextually to user input.
